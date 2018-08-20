@@ -120,7 +120,7 @@ public class HttpFileServerHandler extends SimpleChannelInboundHandler<FullHttpR
 
     private String createPath(String uri) {
 //        String substring = uri.substring(uri.indexOf("/"));
-        return "F:" + uri.replace("/",File.separator);
+        return "D:" + uri.replace("/",File.separator);
 //        return "/" + uri.replace("/",File.separator);
     }
 
