@@ -1,4 +1,4 @@
-package com.test.designpatterns.factorypattern.normalfactory;
+package com.test.designpatterns.factorypattern.simplenormalfactory;
 
 import com.test.designpatterns.factorypattern.Circle;
 import com.test.designpatterns.factorypattern.Rectangle;
@@ -8,7 +8,7 @@ import com.test.designpatterns.factorypattern.Square;
 /**
  * 项目名称:testProject 描述: 创建人:ryw 创建时间:2018/8/31
  */
-public class ShapeFactory {
+public class SimpleShapeFactory {
 
 
 
