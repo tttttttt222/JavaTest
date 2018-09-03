@@ -1,6 +1,7 @@
 package com.test.designpatterns.factorypattern.normalfactory;
 
 import com.test.designpatterns.factorypattern.Circle;
+import com.test.designpatterns.factorypattern.Rectangle;
 import com.test.designpatterns.factorypattern.Shape;
 import com.test.designpatterns.factorypattern.Square;
 
