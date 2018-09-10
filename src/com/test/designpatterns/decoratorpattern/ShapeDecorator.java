@@ -11,7 +11,9 @@ public  class ShapeDecorator implements Shape {
     }
 
     public void draw(){
+        System.out.println("--------------------");
         decoratedShape.draw();
+        System.out.println("--------------------");
     }
 
 }
