@@ -5,23 +5,23 @@ package com.test.datastruct.tree;
  */
 public class TreeNode {
 
-    private int data;
+    private int val;
 
     private TreeNode left;
 
     private TreeNode right;
 
-    public TreeNode(int data) {
-        this.data = data;
+    public TreeNode(int val) {
+        this.val = val;
     }
 
 
-    public int getData() {
-        return data;
+    public int getVal() {
+        return val;
     }
 
-    public void setData(int data) {
-        this.data = data;
+    public void setVal(int val) {
+        this.val = val;
     }
 
     public TreeNode getLeft() {

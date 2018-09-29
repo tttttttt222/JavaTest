@@ -1,7 +1,6 @@
 package com.test.datastruct.tree;
 
 import java.util.ArrayDeque;
-import java.util.PriorityQueue;
 import java.util.Stack;
 
 /**
@@ -12,7 +11,7 @@ public class TreeOperate {
 
     public TreeNode create(int data) {
         TreeNode treeNode = new TreeNode(data);
-        if (treeNode.getData() < 0) {
+        if (treeNode.getVal() < 0) {
             return null;
         } else {
             treeNode.setLeft(create(data - 1));
@@ -24,7 +23,7 @@ public class TreeOperate {
 
     public void PreOrderTraversal(TreeNode treeNode) {
         if (treeNode != null) {
-            System.out.println(treeNode.getData());
+            System.out.println(treeNode.getVal());
             PreOrderTraversal(treeNode.getLeft());
             PreOrderTraversal(treeNode.getRight());
         }
@@ -36,7 +35,7 @@ public class TreeOperate {
         stack.push(treeNode);
         while (!stack.isEmpty()) {
             TreeNode peek = stack.peek();
-            System.out.println(peek.getData());
+            System.out.println(peek.getVal());
             TreeNode node = stack.pop();
             if(node.getRight() != null){
                 stack.push(node.getRight());
@@ -54,7 +53,7 @@ public class TreeOperate {
         queue.add(treeNode);
         while (!queue.isEmpty()) {
             TreeNode peek = queue.peek();
-            System.out.println(peek.getData());
+            System.out.println(peek.getVal());
             TreeNode node = queue.poll();
             if(node.getLeft() != null){
                 queue.add(node.getLeft());
