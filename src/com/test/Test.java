@@ -1,5 +1,8 @@
 package com.test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,18 +19,30 @@ public class Test {
 
     private static final int _1MB = 1024 * 1024;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 //        call();
 //        testInstance();
 //        boolean contains = "余额不足".contains("");
-        int contains = "余额不足".indexOf("");
-//        int contains = "".indexOf("余额不足");
-        System.out.println(contains);
+//        int contains = "余额不足".indexOf("");
+////        int contains = "".indexOf("余额不足");
+//        System.out.println(contains);
+//
+//        Map<String,String> map = new HashMap<>();
+//        Set<Entry<String, String>> entries = map.entrySet();
+//
+//        map.forEach((k,v)->System.out.println("Item : " + k + " Count : " + v));
 
-        Map<String,String> map = new HashMap<>();
-        Set<Entry<String, String>> entries = map.entrySet();
 
-        map.forEach((k,v)->System.out.println("Item : " + k + " Count : " + v));
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH");
+
+//        System.out.println(df.format(new Date()).equals("2018-09-30 15"));
+//
+//        Date date = new Date();
+//
+//        Date dt1 = df.parse("2018-09-30 16");
+//
+//        System.out.println(date.getTime() > dt1.getTime());
+
     }
 
     private static void call() {
