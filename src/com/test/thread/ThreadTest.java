@@ -1,4 +1,4 @@
-package thread;
+package com.test.thread;
 
 import java.util.concurrent.*;
 import java.util.concurrent.Callable;
