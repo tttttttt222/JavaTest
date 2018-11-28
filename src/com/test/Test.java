@@ -1,5 +1,6 @@
 package com.test;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +44,13 @@ public class Test {
 //
 //        System.out.println(date.getTime() > dt1.getTime());
 
+        BigDecimal balance = new BigDecimal(100);
+        String amount = "400000000";
+
+        BigDecimal subtract = new BigDecimal(amount).subtract(balance);
+        double value = new BigDecimal(amount).subtract(balance).doubleValue();
+
+        System.out.println(subtract.toString());
     }
 
     private static void call() {
