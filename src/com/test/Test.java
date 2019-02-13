@@ -20,7 +20,7 @@ public class Test {
 
     private static final int _1MB = 1024 * 1024;
 
-    public static void main(String[] args) throws ParseException {
+    public static void main2(String[] args) throws ParseException {
 //        call();
 //        testInstance();
 //        boolean contains = "余额不足".contains("");
@@ -63,6 +63,12 @@ public class Test {
             a4 = new byte[2 * _1MB];
         }
 //        call();
+    }
+
+
+    public static void main(String[] args) {
+        int a =0b111;
+        System.out.println(a);
     }
 
 
