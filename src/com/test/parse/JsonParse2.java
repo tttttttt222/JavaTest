@@ -26,30 +26,23 @@ public class JsonParse2 {
         content[0] = header;
 
 //        String body = "[{\"to_acc_dept\":\"浦东支行\",\"to_acc_name\":\"腾宇责任有限公司腾宇责任有限公司\",\"to_acc_no\":\"6217850800018933125\",\"to_bank_name\":\"中国银行\",\"to_city_name\":\"上海市\",\"to_pro_name\":\"上海市\",\"trans_cnap\":\"001100011002\",\"trans_money\":\"0.01\",\"trans_no\":\"SC4011532423187833\"},{\"to_acc_dept\":\"浦东支行\",\"to_acc_name\":\"腾宇责任有限公司腾宇责任有限公司\",\"to_acc_no\":\"6217850800018933125\",\"to_bank_name\":\"中国银行\",\"to_city_name\":\"上海市\",\"to_pro_name\":\"上海市\",\"trans_cnap\":\"001100011002\",\"trans_money\":\"0.01\",\"trans_no\":\"SC4011532423187840\"}]";
-        String body = " {\t\n" +
-                "\n" +
-                "\n" +
-                "\"transContent\":\n" +
-                "[{\n" +
-                "\"trans_orderid\":\"10001\",\n" +
-                "\"trans_batchid\":\"20001\",\n" +
-                "\t\"trans_no\":\"1234567A\",\n" +
-                "\t\"trans_money\":\"1.23\",\n" +
-                "\t\"to_acc_name\":\"周小忍\",\n" +
-                "\t\"to_acc_no\":\"6222601234567890\",\n" +
-                "\t\"to_acc_dept\":\"上海市|上海市|工商银行张江支行\",\n" +
-                "\"trans_summary\":\"\"\n" +
-                "},{\n" +
-                "\"trans_orderid\":\"10002\",\n" +
-                "\"trans_batchid\":\"20001\",\n" +
-                "\t\"trans_no\":\"1234567B\",\n" +
-                "\t\"trans_money\":\"2.34\",\n" +
-                "\t\"to_acc_name\":\"周小忍\",\n" +
-                "\t\"to_acc_no\":\"6222601234567890\",\n" +
-                "\t\"to_acc_dept\":\"上海市|上海市|工商银行张江支行\",\n" +
-                "\"trans_summary\":\"\"\n" +
-                "}]\n" +
-                "}";
+        String body = "{\n"
+                + "    \"transContent\":{\n"
+                + "        \"transNo\":\"SC4011532423187833\",\n"
+                + "        \"transMoney\":\"0.01\",\n"
+                + "        \"transType\":\"1\",\n"
+                + "        \"transAccNo\":\"621785086668933125\",\n"
+                + "        \"transAccName\":\"腾宇责任有限公司腾宇责任有限公司\",\n"
+                + "        \"cardBankName\":\"中国银行\",\n"
+                + "        \"cardCityName\":\"上海市\",\n"
+                + "        \"cardProName\":\"上海市\",\n"
+                + "        \"cardAccDept\":\"浦东支行\",\n"
+                + "        \"cardCnap\":\"001100011002\",\n"
+                + "        \"transIdCard\":\"32222188801014456\",\n"
+                + "        \"transMobile\":\"1231231231231\",\n"
+                + "        \"transSummary\":\"\"\n"
+                + "    }\n"
+                + "}";
 
         content[1] = body;
 
@@ -80,7 +73,8 @@ public class JsonParse2 {
         } else {
             transApiParams = new TransApiParams<T>();
             TransApiReqContent<T> tTransApiReqContent = new TransApiReqContent<>();
-            T res = JSON.parseObject(body, t);
+            String transContent1 = transContent.getString("transContent");
+            T res = JSON.parseObject(transContent1, t);
             tTransApiReqContent.setTransContent(res);
             transApiParams.setBody(tTransApiReqContent);
         }
