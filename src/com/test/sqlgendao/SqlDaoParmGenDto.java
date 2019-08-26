@@ -75,7 +75,7 @@ public class SqlDaoParmGenDto {
 				case "tinyint":
 					return "TINYINT";
 				case "int":
-					return "Integer";
+					return "INTEGER";
 				case "timestamp":
 					return "TIMESTAMP";
 				case "decimal":
