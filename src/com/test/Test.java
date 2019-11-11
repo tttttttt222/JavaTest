@@ -1,6 +1,8 @@
 package com.test;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,7 +68,7 @@ public class Test {
     }
 
 
-    public static void main(String[] args) {
+    public static void main4(String[] args) {
         int a =0b111;
         System.out.println(a);
     }
@@ -91,6 +93,13 @@ public class Test {
     }
 
 
-
+    public static void main(String[] args) {
+        try {
+            String hostAddress = InetAddress.getLocalHost().getHostAddress();
+            System.out.println(hostAddress);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
