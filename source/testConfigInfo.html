@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutPage}">
+<body class="sticky-header">
+
+<section>
+
+    <!-- main content start-->
+    <th:block layout:fragment="page_content">
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-md-12">
+                    <section class="panel">
+                        <header class="panel-heading">保理参数配置</header>
+
+                        <div class="panel-body">
+                            <form id="searchForm"
+                                  th:action="|${#request.getContextPath()}/mandaoFinance/factoringConfigInfo/searchFactoringConfigInfo|"
+                                  class="form-horizontal" role="form">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">保理ID</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="memberId" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">状态</label>
+                                            <div class="col-md-6">
+                                                <select id="state" name="state" class="form-control">
+                                                    <option value=""></option>
+                                                    <option value="0">初始化</option>
+                                                    <option value="1">正常使用</option>
+                                                    <option value="-1">暂停</option>
+                                                    <option value="2">删除</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-offset-2">
+                                    <div class="row">
+                                        <button class="btn btn-info" id="searchBtn" data-btn="search" type="button">
+                                            <i class="fa fa-search"></i> 查询
+                                        </button>
+                                        <button class="btn btn-default" data-btn="reset" type="button">
+                                            <i class="fa fa-reply-all"></i> 重置
+                                        </button>
+                                        <a class="btn btn-primary" data-btn="add" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/add')}">
+                                            <i class="fa fa-plus"></i> 新增
+                                        </a>
+                                        <a class="btn btn-warning" data-btn="edit" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/edit')}">
+                                            <i class="fa fa-edit"></i> 修改
+                                        </a>
+                                        <!--<a class="btn btn-warning" data-btn="detail" data-toggle="modal"-->
+                                           <!--th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/detail')}">-->
+                                            <!--<i class="fa fa-detail"></i> 详情-->
+                                        <!--</a>-->
+                                        <a id="activeBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/active')}">
+                                            <i class="fa fa-edit"></i> 启用
+                                        </a>
+                                        <a id="deactiveBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/active')}">
+                                            <i class="fa fa-edit"></i> 禁用
+                                        </a>
+                                        <a id="downloadBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/factoringConfigInfo/downloadFactPubKey')}">
+                                            <i class="fa fa-edit"></i> 前置公钥下载
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="adv-table editable-table ">
+                                <table class="table table-striped table-hover table-bordered"
+                                       id="searchDatatable" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th width="" data-field="memberId" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">保理ID</th>
+                                        <th width="" data-field="successNoticeUrl" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">转账成功通知地址</th>
+                                        <th width="" data-field="failNoticeUrl" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">转账失败通知地址</th>
+                                        <th width="" data-field="createProtocolNoticeUrl" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">生成债转协议通知地址</th>
+                                        <th width="" data-field="queryProtocolNoticeUrl" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">查询债转协议地址</th>
+                                        <!--<th width="" data-field="publicKey">保理公钥</th>-->
+                                        <!--<th width="" data-field="privateKey">保理私钥</th>-->
+                                        <th width="" data-field="stateVal" data-label="正常使用:success;暂停:danger">状态</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!--body wrapper end-->
+
+        </div>
+
+
+        <div class="modal fade" id="addOrEditConfigDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" style="width: 50%">
+                <form th:action="|${#request.getContextPath()}/mandaoFinance/factoringConfigInfo/|"
+                      id="addOrEditConfigForm"
+                      data-role="edit" enctype="multipart/form-data"
+                      class="cmxform form-horizontal" novalidate="novalidate">
+                    <input type="hidden" name="id" class="form-control">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-hidden="true">&times;
+                            </button>
+                            <h4 class="modal-title" id="addOrEditRoleTitle">新增</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label" style="margin-left: 10px;">保理ID</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="memberId" id="addMemberId"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label"></label>
+                                            <div class="col-md-7">
+                                                <!--<input type="text" name="bfMicrofinanceMemberId"-->
+                                                       <!--id="addBfMicrofinanceMemberId" class="form-control" required>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label" style="margin-left: 10px;">转账成功通知地址</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="successNoticeUrl"
+                                                       id="addSuccessNoticeUrl" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">转账失败通知地址</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="failNoticeUrl"
+                                                       id="addFailNoticeUrl" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label" style="margin-left: 10px;">生成债转协议通知地址</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="createProtocolNoticeUrl"
+                                                       id="addCreateProtocolNoticeUrl" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">查询债转协议地址</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="queryProtocolNoticeUrl"
+                                                       id="addQueryProtocolNoticeUrl" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label" style="margin-left: 10px;">保理公钥</label>
+                                            <div class="col-md-7">
+                                                <input type="file" name="publicFile"  class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-sm-3 control-label"></label>
+                                    <div class="col-md-6"><h3></h3></div>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <div id="addOrEditRoleBtnDiv" class="modal-footer">
+                                    <button data-btn="submit" class="btn btn-warning" type="submit">
+                                        提交
+                                    </button>
+                                    <button data-btn="close" data-dismiss="modal" class="btn btn-default" type="button">
+                                        取消
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="col-md-12 detailMode" id="detailMode">
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    详情
+                    <span class="tools pull-right">
+                <a class="fa fa-chevron-down" href="javascript:;"></a>
+                <a class="fa fa-times" href="javascript:;"></a>
+             </span>
+                </header>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">保理ID</label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="memberId"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title"></label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field=""></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">转账成功通知地址</label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="successNoticeUrl"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">转账失败通知地址</label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="failNoticeUrl"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">生成债转协议通知地址</label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="createProtocolNoticeUrl"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">查询债转协议地址</label>
+                            <span class="col-sm-8" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="queryProtocolNoticeUrl"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">保理公钥</label>
+                            <span class="col-sm-8" id="publicKey1" ondblclick="change(1)" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" data-field="publicKey"></span>
+                            <span class="col-sm-8" id="publicKey2" data-field="publicKey" ondblclick="change(0)" style="word-break:normal; width:500px; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ;" ></span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+    </th:block>
+
+    <!-- main content end-->
+</section>
+
+<th:block layout:fragment="page_script">
+    <script type="text/javascript">
+
+        function change(flag){
+            if(flag == 1){
+                $("#publicKey1").hide();
+                $("#publicKey2").show();
+                $("#privateKey1").hide();
+                $("#privateKey2").show();
+            }else{
+                $("#publicKey2").hide();
+                $("#publicKey1").show();
+                $("#privateKey2").hide();
+                $("#privateKey1").show();
+            }
+        }
+
+
+        $(window).load(function () {
+            $("#publicKey2").hide();
+            $("#privateKey2").hide();
+
+            jQuery.extend(jQuery.validator.messages, {
+                required: "必填字段"
+            });
+
+            //用户启用
+            $("#activeBtn").click(function () {
+                var ids = [];
+                var selObj = $("#searchDatatable").DataTable().rows('.selected').data();
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定启用该条记录吗?")) {
+                    return false;
+                }
+                for (var i = 0; i < selObj.length; i++) {
+                    ids.push(selObj[i].id);
+                }
+                responDate(ids, "1", "启用");
+            });
+
+            //用户禁用
+            $("#deactiveBtn").click(function () {
+                var ids = [];
+                var selObj = $("#searchDatatable").DataTable().rows('.selected').data();
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定禁用该条记录吗?")) {
+                    return false;
+                }
+                for (var i = 0; i < selObj.length; i++) {
+                    ids.push(selObj[i].id);
+                }
+                responDate(ids, "-1", "禁用");
+            });
+
+            //公钥下载
+            $("#downloadBtn").click(function () {
+                var selObj = $("#searchDatatable").DataTable().row(".selected");
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                var id = selObj.data().id + "";
+
+                var url = omsCtx + "/mandaoFinance/factoringConfigInfo/downloadFactPubKey?id=" + id;
+                window.location.href = url;
+            });
+
+            // 页面初始化
+            BaofuPage.init({
+                searchFormId: "searchForm",
+                dataTableId: "searchDatatable",
+                initFormIds: [
+                    "searchForm",
+                    "addOrEditConfigForm"
+                ],
+                addOrEditWin: {
+                    winDivId: "addOrEditConfigDiv",
+                    title: "配置",
+                    searchId: "id",
+
+                    fileSubmitFlag:true,
+
+                    addAfter: function (data) {
+                        $('#addMemberId').removeAttr("readonly");
+
+                    },
+                    editAfter: function (data) {
+                        $('#addMemberId').attr("readonly",true);
+                    }
+                },
+
+                detailMode: {
+                    searchId: "id",
+                    searchUrl: omsCtx + "/mandaoFinance/factoringConfigInfo/",
+                    modelId: "detailMode"
+                }
+
+            });
+        });
+
+
+        /**
+         * 启用/禁用
+         */
+        function responDate(ids, btnFlag, msg) {
+            PageUtils.ajaxSubmit(omsCtx + "/mandaoFinance/factoringConfigInfo/active", {
+                "ids": ids.join(","),
+                "btnFlag": btnFlag
+            }, "POST", function (data) {
+                if (data.resultCode == '000000') {
+                    PagePrompts.success(msg + "成功！");
+                    $("#searchBtn").click();
+                } else {
+                    PagePrompts.fail(msg + "失败！" + data["errorMsg"]);
+                }
+            });
+        }
+
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutPage}">
+<body class="sticky-header">
+
+<section>
+
+    <!-- main content start-->
+    <th:block layout:fragment="page_content">
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-md-12">
+                    <section class="panel">
+                        <header class="panel-heading">小贷保理关系表</header>
+
+                        <div class="panel-body">
+                            <form id="searchForm"
+                                  th:action="|${#request.getContextPath()}/mandaoFinance/mandaoFinanceConfig/searchFinanceConfig|"
+                                  class="form-horizontal" role="form">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">商户</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="bfMemberId" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">小贷商户</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="bfMicrofinanceMemberId" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">保理商户</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="bfFactoringMemberId" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">状态</label>
+                                            <div class="col-md-6">
+                                                <select id="state" name="state" class="form-control">
+                                                    <option value=""></option>
+                                                    <option value="0">初始化</option>
+                                                    <option value="1">正常使用</option>
+                                                    <option value="-1">暂停</option>
+                                                    <option value="2">删除</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">开始日期</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="beginTime" readonly="" class="form-control"
+                                                       data-date-type="date"
+                                                       data-date-format="yyyy-mm-dd"
+                                                       data-date-default="today">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">结束日期</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="endTime" readonly="" class="form-control"
+                                                       data-date-type="date"
+                                                       data-date-format="yyyy-mm-dd"
+                                                       data-date-default="today">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-offset-2">
+                                    <div class="row">
+                                        <button class="btn btn-info" id="searchBtn" data-btn="search" type="button">
+                                            <i class="fa fa-search"></i> 查询
+                                        </button>
+                                        <button class="btn btn-default" data-btn="reset" type="button">
+                                            <i class="fa fa-reply-all"></i> 重置
+                                        </button>
+                                        <a class="btn btn-primary" data-btn="add" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/mandaoFinanceConfig/add')}">
+                                            <i class="fa fa-plus"></i> 新增
+                                        </a>
+                                        <a class="btn btn-warning" data-btn="edit" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/mandaoFinanceConfig/edit')}">
+                                            <i class="fa fa-edit"></i> 修改
+                                        </a>
+                                        <a id="activeBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/mandaoFinanceConfig/activeConfig')}">
+                                            <i class="fa fa-edit"></i> 启用
+                                        </a>
+                                        <a id="deactiveBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/mandaoFinanceConfig/activeConfig')}">
+                                            <i class="fa fa-edit"></i> 禁用
+                                        </a>
+                                        <a id="downloadBtn" class="btn btn-warning" data-toggle="modal"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/mandaoFinanceConfig/downloadConfigPubKey')}">
+                                            <i class="fa fa-edit"></i> 公钥下载
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="adv-table editable-table ">
+                                <table class="table table-striped table-hover table-bordered"
+                                       id="searchDatatable" width="100%" data-select="multi">
+                                    <thead>
+                                    <tr>
+                                        <th width="" data-field="bfMemberId">商户号</th>
+                                        <th width="" data-field="memberName">业务商户名称</th>
+                                        <th width="" data-field="bfMicrofinanceMemberId">商户号-小贷商户</th>
+                                        <th width="" data-field="secondaryMemberId">商户-小贷二级商户</th>
+                                        <th width="" data-field="microfinanceMemberName">小贷商户名称</th>
+                                        <th width="" data-field="bfFactoringMemberId">商户号-保理商户</th>
+                                        <th width="" data-field="factoringMemberName">保理商户名称</th>
+                                        <th width="" data-field="microfinanceFeeRate">小贷手续费</th>
+                                        <th width="" data-field="factoringFeeRate">保理手续费</th>
+                                        <th width="" data-field="microfinancePayFee">小贷代付手续费</th>
+<!--                                        <th width="" data-field="factoringMemberProtocolCode">保理商户框架协议编号</th>-->
+                                        <th width="" data-field="stateVal" data-label="正常使用:success;暂停:danger">状态</th>
+<!--                                        <th width="" data-field="contractNumber">合同编号</th>-->
+<!--                                        <th width="" data-field="contractStagesNumber">分期合同编号</th>-->
+<!--                                        <th width="" data-field="contractTransferNumber">债转合同编号</th>-->
+                                        <th width="" data-field="createTime" data-format="date:yyyy-MM-dd HH:mm:ss">创建时间</th>
+<!--                                        <th width="" data-field="updateTime">修改时间</th>-->
+<!--                                        <th width="" data-field="remark">备注</th>-->
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!--body wrapper end-->
+
+        </div>
+
+
+        <div class="modal fade" id="addOrEditConfigDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" style="width: 50%">
+                <form th:action="|${#request.getContextPath()}/mandaoFinance/mandaoFinanceConfig/|"
+                      id="addOrEditConfigForm"
+                      data-role="edit" enctype="multipart/form-data"
+                      class="cmxform form-horizontal" novalidate="novalidate">
+                    <input type="hidden" name="id" class="form-control">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-hidden="true">&times;
+                            </button>
+                            <h4 class="modal-title" id="addOrEditRoleTitle">增加</h4>
+                        </div>
+                        <div class="modal-body">
+
+
+                            <div class="form-group">
+
+<!--                                <div class="row">-->
+<!--                                    <div align="left"-->
+<!--                                         style="color: white;background-color: #65CEA7;margin-bottom: 5px; padding: 10px">-->
+<!--                                        关联方信息-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">商户号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="bfMemberId" id="addBfMemberId"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">商户名</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="memberName" id="addMemberName"
+                                                       class="form-control"
+                                                       required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">小贷商户号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="bfMicrofinanceMemberId"
+                                                       id="addBfMicrofinanceMemberId" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">小贷商户名</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="microfinanceMemberName"
+                                                       id="addMicrofinanceMemberName" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">保理商户号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="bfFactoringMemberId"
+                                                       id="addBfFactoringMemberId" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">保理商户名</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="factoringMemberName"
+                                                       id="addFactoringMemberName" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">小贷手续费</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="microfinanceFeeRate"
+                                                       id="addMicrofinanceFeeRate" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">保理手续费</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="factoringFeeRate" id="addFactoringFeeRate"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">小贷代付手续费</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="microfinancePayFee" id="addMicrofinancePayFee"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">商户小贷二级商户号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="secondaryMemberId" id="addSecondaryMemberId"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">框架协议编号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="factoringMemberProtocolCode"
+                                                       id="addFactoringMemberProtocolCode" class="form-control"
+                                                       required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">合同编号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="contractNumber" id="addContractNumber"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">分期合同编号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="contractStagesNumber"
+                                                       id="addContractStagesNumber" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">债转合同编号</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="contractTransferNumber"
+                                                       id="addContractTransferNumber" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-lg-4 col-sm-4 control-label">备注</label>
+                                            <div class="col-md-7">
+                                                <input type="text" name="remark" id="addRemark" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-sm-3 control-label"></label>
+                                    <div class="col-md-6"><h3></h3></div>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <div id="addOrEditRoleBtnDiv" class="modal-footer">
+                                    <button data-btn="submit" class="btn btn-warning" type="submit">
+                                        提交
+                                    </button>
+                                    <button data-btn="close" data-dismiss="modal" class="btn btn-default" type="button">
+                                        取消
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- detail mode begin -->
+        <div class="col-md-12 detailMode" id="detailMode">
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    产品周期详情
+                    <span class="tools pull-right">
+                <a class="fa fa-chevron-down" href="javascript:;"></a>
+                <a class="fa fa-times" href="javascript:;"></a>
+             </span>
+                </header>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">商户号</label>
+                            <span class="col-sm-8" data-field="bfMemberId"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">业务商户名称</label>
+                            <span class="col-sm-8" data-field="memberName"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">商户号-小贷商户</label>
+                            <span class="col-sm-8" data-field="bfMicrofinanceMemberId"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">小贷商户名称</label>
+                            <span class="col-sm-8" data-field="microfinanceMemberName"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">商户号-保理商户</label>
+                            <span class="col-sm-8" data-field="bfFactoringMemberId"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">保理商户名称</label>
+                            <span class="col-sm-8" data-field="factoringMemberName"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">状态</label>
+                            <span class="col-sm-8" data-field="stateVal" data-label="正常使用:success;暂停:danger"></span>
+                        </div>
+                    </div>
+
+                    <br/><hr/><br/>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">小贷手续费</label>
+                            <span class="col-sm-8" data-field="microfinanceFeeRate"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">保理手续费</label>
+                            <span class="col-sm-8" data-field="factoringFeeRate"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">小贷代付手续费</label>
+                            <span class="col-sm-8" data-field="microfinancePayFee"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">商户小贷二级商户号</label>
+                            <span class="col-sm-8" data-field="secondaryMemberId"></span>
+                        </div>
+                    </div>
+
+                    <br/><hr/><br/>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">保理商户框架协议编号</label>
+                            <span class="col-sm-8" data-field="factoringMemberProtocolCode"></span>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">合同编号</label>
+                            <span class="col-sm-8" data-field="contractNumber"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">分期合同编号</label>
+                            <span class="col-sm-8" data-field="contractStagesNumber"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">债转合同编号</label>
+                            <span class="col-sm-8" data-field="contractTransferNumber"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">创建时间</label>
+                            <span class="col-sm-8" data-field="createTime" data-format="date:yyyy-MM-dd HH:mm:ss"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">创建人</label>
+                            <span class="col-sm-8" data-field="createBy"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">修改时间</label>
+                            <span class="col-sm-8" data-field="updateTime" data-format="date:yyyy-MM-dd HH:mm:ss"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="col-sm-4 label-title">修改人</label>
+                            <span class="col-sm-8" data-field="updateBy"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </th:block>
+
+    <!-- main content end-->
+</section>
+
+<th:block layout:fragment="page_script">
+    <script type="text/javascript">
+
+        $(window).load(function () {
+            jQuery.extend(jQuery.validator.messages, {
+                required: "必填字段"
+            });
+
+            //用户启用
+            $("#activeBtn").click(function () {
+                var ids = [];
+                var selObj = $("#searchDatatable").DataTable().rows('.selected').data();
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定启用该条记录吗?")) {
+                    return false;
+                }
+                for (var i = 0; i < selObj.length; i++) {
+                    ids.push(selObj[i].id);
+                }
+                responDate(ids, "1", "启用");
+            });
+
+            //用户禁用
+            $("#deactiveBtn").click(function () {
+                var ids = [];
+                var selObj = $("#searchDatatable").DataTable().rows('.selected').data();
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定禁用该条记录吗?")) {
+                    return false;
+                }
+                for (var i = 0; i < selObj.length; i++) {
+                    ids.push(selObj[i].id);
+                }
+                responDate(ids, "-1", "禁用");
+            });
+
+            //公钥下载
+            $("#downloadBtn").click(function () {
+                var selObj = $("#searchDatatable").DataTable().row(".selected");
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                var id = selObj.data().id + "";
+
+                var url = omsCtx + "/mandaoFinance/mandaoFinanceConfig/downloadConfigPubKey?id=" + id;
+                // window.open(url);
+                window.location.href = url;
+            });
+
+            // 页面初始化
+            BaofuPage.init({
+                searchFormId: "searchForm",
+                dataTableId: "searchDatatable",
+                initFormIds: [
+                    "searchForm",
+                    "addOrEditConfigForm"
+                ],
+                addOrEditWin: {
+                    winDivId: "addOrEditConfigDiv",
+                    title: "配置",
+                    searchId: "id",
+                    customValidate: function (form) {
+                        return thisValidate(form);
+                    },
+                    addAfter: function (data) {
+
+                    },
+                    editAfter: function (data) {
+
+                    }
+                },detailMode: {
+                    searchId: "id",
+                    searchUrl: omsCtx + "/mandaoFinance/mandaoFinanceConfig/",
+                    modelId: "detailMode"
+                }
+            });
+        });
+
+        function thisValidate(form) {
+            var result = [];
+            var microfinanceFeeRate = $(form).find("input[name=microfinanceFeeRate]").val();
+            var factoringFeeRate = $(form).find("input[name=factoringFeeRate]").val();
+            var microfinancePayFee = $(form).find("input[name=microfinancePayFee]").val();
+            var amountRegExp = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d+$)/;
+            if (!amountRegExp.test(microfinanceFeeRate)) {
+                result.push({"microfinanceFeeRate": "请正确填写您的费率,格式如:0.01"});
+            }
+            if (!amountRegExp.test(factoringFeeRate)) {
+                result.push({"factoringFeeRate": "请正确填写您的费率,格式如:0.01"});
+            }
+            if (!amountRegExp.test(microfinancePayFee)) {
+                result.push({"microfinancePayFee": "请正确填写您的费率,格式如:0.01"});
+            }
+            return result;
+        }
+
+        /**
+         * 启用/禁用
+         */
+        function responDate(ids, btnFlag, msg) {
+            PageUtils.ajaxSubmit(omsCtx + "/mandaoFinance/mandaoFinanceConfig/activeConfig", {
+                "ids": ids.join(","),
+                "btnFlag": btnFlag
+            }, "POST", function (data) {
+                if (data.resultCode == '000000') {
+                    PagePrompts.success(msg + "成功！");
+                    $("#searchBtn").click();
+                } else {
+                    PagePrompts.fail(msg + "失败！" + data["errorMsg"]);
+                }
+            });
+        }
+
+    </script>
+</th:block>
+
+</body>
+</html>

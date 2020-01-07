@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutPage}">
+<body class="sticky-header">
+
+<section>
+
+    <th:block layout:fragment="page_content">
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-md-12">
+                    <section class="panel">
+                        <header class="panel-heading">用户查询</header>
+                        <div class="panel-body">
+                            <form id="searchForm"
+                                  th:action="|${#request.getContextPath()}/mandaoFinance/mandaoFinanceOrder|"
+                                  class="form-horizontal"
+                                  role="form">
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">借款单号</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="orderId" name="orderId" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">会员ID</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="memberID" name="memberID" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">商户订单号</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="memberTransferID" name="memberTransferID" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">状态</label>
+                                            <div class="col-md-6">
+                                                <select data-enum="MicrofinanceState" name="state" id="state"
+                                                        class="form-control"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">开始日期</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="beginTime" readonly=""  name="beginTime" class="form-control"
+                                                       data-date-type="date"
+                                                       data-date-format="yyyy-mm-dd"
+                                                       data-date-default="today">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">结束日期</label>
+                                            <div class="col-md-6">
+                                                <input type="text" id="endTime" readonly="" name="endTime" class="form-control"
+                                                       data-date-type="date"
+                                                       data-date-format="yyyy-mm-dd"
+                                                       data-date-default="today">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-sm-3 control-label">收款人姓名</label>
+                                            <div class="col-md-6">
+                                                <input type="text" name="receiveName" id="receiveName"
+                                                       class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <button class="btn btn-info" id="searchBtn" data-btn="search" type="button">
+                                            <i class="fa fa-search"></i> 查询
+                                        </button>
+                                        <button class="btn btn-default" data-btn="reset" type="button">
+                                            <i class="fa fa-reply-all"></i> 重置
+                                        </button>
+                                        <a class="btn btn-primary" data-btn="notifyButton" id="notifyButton"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/financeNotifyMember')}"><i
+                                                class="fa fa-edit"></i> 商户通知 </a>
+                                        <a class="btn btn-danger" data-btn="thawButton" id="thawButton"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/financeThaw')}"><i
+                                                class="fa fa-plus"></i> 解冻 </a>
+                                        <a class="btn btn-warning" data-btn="factoryButton" id="factoryButton"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/financeNotifyByFactory')}">
+                                            <i class="fa fa-edit"></i> 通知保理
+                                        </a>
+                                        <a class="btn btn-warning" data-btn="exportButton" id="exportButton"
+                                           th:if="${#lists.contains(session.buttonList,'/mandaoFinance/exportByFactory')}">
+                                            <i class="fa fa-edit"></i> 导出Excel
+                                        </a>
+                                    </div>
+                                </div>
+
+
+                            </form>
+                            <div class="adv-table editable-table ">
+                                <table class="table table-striped table-hover table-bordered"
+                                       id="searchDatatable" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th width="" data-field="orderId">借款单号</th>
+                                        <th width="" data-field="memberName">会员名称</th>
+                                        <th width="" data-field="memberId">会员ID</th>
+                                        <th width="" data-field="memberTransferId" data-label="0:warning;1:success;2:danger" data-label-href="clientState">商户订单号</th>
+                                        <th width="" data-field="custom">收款人姓名</th>
+                                        <th width="" data-field="bankName">收款方银行</th>
+                                        <th width="" data-field="card">收款方账号</th>
+                                        <th width="" data-field="loanAmt" data-amount="accounting">转账金额</th>
+                                        <th width="" data-field="state" data-label-enum="MicrofinanceState">状态</th>
+                                        <th width="" data-field="createTime" data-format="date:yyyy-MM-dd HH:mm:ss">
+                                            创建时间
+                                        </th>
+                                        <th width="" data-field="updateTime" data-format="date:yyyy-MM-dd HH:mm:ss">
+                                            修改时间
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- detail mode begin -->
+        <div class="col-md-12 detailMode" id="detailMode" style="height: 1000px">
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    订单详情
+                    <span class="tools pull-right">
+                        <a class="fa fa-times"  onclick="closeOrderDetail()"></a>
+                    </span>
+                </header>
+                <div class="row-form" style="margin-top: 10px">
+                    <div style="text-align: right">
+                        <button class="btn btn-info" id="compensateBtn" data-btn="compensate" type="button" style="display: none"
+                                th:if="${#lists.contains(session.buttonList,'/factoring/transferOrder/compensate')}">
+                            <i></i>余额不足补单
+                        </button>
+                        <button class="btn btn-info" id="circleStateBtn" data-btn="circleState" type="button" style="display: none"
+                                th:if="${#lists.contains(session.buttonList,'/factoring/transferOrder/circleState')}">
+                            <i></i>流程流转
+                        </button>
+                        <button class="btn btn-info" id="succNoticeBtn" data-btn="succNotice" type="button" style="display: none"
+                                th:if="${#lists.contains(session.buttonList,'/factoring/transferOrder/succNoticeMicro')}">
+                            <i></i>通知小贷前置
+                        </button>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                    <li role="presentation" class="active" id="fact"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">小贷订单详情</a></li>
+                    <li role="presentation" id="factMicro"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">小贷-保理债转</a></li>
+                    <li role="presentation" id="merFact"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">保理-商户债转</a></li>
+                </ul>
+                <div class="tab-content" style="margin-top: 10px">
+                    <div role="tabpanel" class="tab-pane active" id="home">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">借款单号</label>
+                                <span class="col-sm-8" data-field="orderId" id="page_orderId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">会员名称</label>
+                                <span class="col-sm-8" data-field="memberName" id="page_memberName"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">商户订单号</label>
+                                <span class="col-sm-8" data-field="memberTransferId" ></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">会员ID</label>
+                                <span class="col-sm-8" data-field="memberId"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款人证件号</label>
+                                <span class="col-sm-8" data-field="certifyId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款人姓名</label>
+                                <span class="col-sm-8" data-field="custom" id="page_custom"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款方银行</label>
+                                <span class="col-sm-8" data-field="bankName" id="page_bankName"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款方账号</label>
+                                <span class="col-sm-8" data-field="card" id="page_card"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">转账金额</label>
+                                <span class="col-sm-8" data-field="loanAmt" id="page_loanAmt"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">状态</label>
+                                <span class="col-sm-8" data-field="state" id="page_state" data-label-enum="MicrofinanceState"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">小贷商户号</label>
+                                <span class="col-sm-8" data-field="financeMemberId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">保理商户号</label>
+                                <span class="col-sm-8" data-field="tpMerId" ></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">小贷商户名称</label>
+                                <span class="col-sm-8" data-field="microfinanceMemberName"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">保理商户名称</label>
+                                <span class="col-sm-8" data-field="factoringMemberName" ></span>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">小贷金额</label>
+                                <span class="col-sm-8" data-field="microfinanceAmount"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">保理金额</label>
+                                <span class="col-sm-8" data-field="factoringAmount" ></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">小贷费率(%)</label>
+                                <span class="col-sm-8" data-field="microfinanceRate"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">保理费率(%)</label>
+                                <span class="col-sm-8" data-field="factoringRate" ></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">冻结订单号</label>
+                                <span class="col-sm-8" data-field="freezeNo"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">解冻订单号</label>
+                                <span class="col-sm-8" data-field="thawNo" ></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">创建时间</label>
+                                <span class="col-sm-8" data-field="createTime"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">更新时间</label>
+                                <span class="col-sm-8" data-field="updateTime"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">订单信息</label>
+                                <span class="col-sm-8" data-field="message"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="profile">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">债转邀约订单号</label>
+                                <span class="col-sm-8" data-field="businessId" id="detailMode_businessId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">转账订单号</label>
+                                <span class="col-sm-8" data-field="transferOrderId" id="detailMode_transferOrderId"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">付款方商户号</label>
+                                <span class="col-sm-8" data-field="payMemberId" id="detailMode_payMemberId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">付款方商户名称</label>
+                                <span class="col-sm-8" data-field="payMemberName" id="detailMode_payMemberName"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款方商户号</label>
+                                <span class="col-sm-8" data-field="payeeMemberId"  id="detailMode_payeeMemberId"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">收款方商户名称</label>
+                                <span class="col-sm-8" data-field="payeeMemberName"  id="detailMode_payeeMemberName"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">转账金额</label>
+                                <span class="col-sm-8" data-field="transferMoney" id="detailMode_transferMoney"></span>
+                            </div>
+                            <div class="col-md-6 form-group" >
+                                <label class="col-sm-4 label-title">手续费</label>
+                                <span class="col-sm-8" data-field="transferFee" id="detailMode_transferFee"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">订单状态</label>
+                                <span class="col-sm-8" data-field="succFlag" id="detailMode_succFlag"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">备注</label>
+                                <span class="col-sm-8" data-field="remark" id="detailMode_remark"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">创建时间</label>
+                                <span class="col-sm-8" data-field="createTime" id="detailMode_createTime"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">更新时间</label>
+                                <span class="col-sm-8" data-field="updateTime" id="detailMode_updateTime"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title">流转状态</label>
+                                <span class="col-sm-8" data-field="circleState" id="detailMode_circleState"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-sm-4 label-title" ></label>
+                                <span  class="col-sm-8"></span>
+                            </div>
+                        </div>
+
+                        <span  style="display: none" data-field="factType"   id="detailMode_type"></span>
+                        <span  style="display: none" data-field="factOrderId" id="detailMode_orderId"></span>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </th:block>
+
+</section>
+
+<th:block layout:fragment="page_script">
+    <script type="text/javascript">
+        $(window).load(function () {
+            // 删除按钮
+            $("#notifyButton").click(function () {
+                var selObj = $("#searchDatatable").DataTable().row(".selected");
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                console.log(selObj.data())
+                if (!confirm("确定补发商户通知吗?")) {
+                    return false;
+                }
+                var id = selObj.data().orderId + "";
+                PageUtils.ajaxSubmit(omsCtx + "/mandaoFinance/financeNotifyMember", {"orderId": id}, "POST", function (data) {
+                    if (data["resultCode"] == "000000") {
+                        PagePrompts.success("通知成功！");
+                        $("#searchBtn").click();
+                    } else {
+                        PagePrompts.fail("通知失败！" + data["msg"])
+                    }
+                });
+            });
+            // 删除按钮
+            $("#thawButton").click(function () {
+                var selObj = $("#searchDatatable").DataTable().row(".selected");
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定解冻此数据吗?")) {
+                    return false;
+                }
+                var id = selObj.data().orderId + "";
+                PageUtils.ajaxSubmit(omsCtx + "/mandaoFinance/financeThaw", {"orderId": id}, "POST", function (data) {
+                    if (data["resultCode"] == "000000") {
+                        PagePrompts.success("解冻成功！");
+                        $("#searchBtn").click();
+                    } else {
+                        PagePrompts.fail("解冻失败！" + data["msg"])
+                    }
+                });
+            });
+            // 删除按钮
+            $("#factoryButton").click(function () {
+                var selObj = $("#searchDatatable").DataTable().row(".selected");
+                if (selObj == null || selObj.length <= 0) {
+                    PagePrompts.fail("未选中需要处理的数据");
+                    return;
+                }
+                if (!confirm("确定通知保理吗?")) {
+                    return false;
+                }
+                var id = selObj.data().orderId + "";
+                PageUtils.ajaxSubmit(omsCtx + "/mandaoFinance/financeNotifyByFactory", {"orderId": id}, "POST", function (data) {
+                    if (data["resultCode"] == "000000") {
+                        PagePrompts.success("通知保理成功！");
+                        $("#searchBtn").click();
+                    } else {
+                        PagePrompts.fail("通知保理失败！" + data["msg"])
+                    }
+                });
+            });
+            // 导出按钮
+            $("#exportButton").click(function () {
+                $("#searchForm").attr('action',omsCtx + '/mandaoFinance/exportByFactory');
+                $("#searchForm").submit();
+                $("#searchForm").attr('action',omsCtx + '/mandaoFinance/mandaoFinanceOrder');
+            });
+            jQuery.extend(jQuery.validator.messages, {
+                required: "必填字段"
+            });
+            // 页面初始化
+            BaofuPage.init({
+                searchFormId: "searchForm",
+                dataTableId: "searchDatatable",
+                initFormIds: [
+                    "searchForm"
+                ],
+                detailMode: {
+                    dataTableId: "searchDatatable",
+                    modelId: "detailMode"
+                }
+            });
+
+            $("#factMicro").bind('click',function () {
+                loadTrans("1")
+                $("#circleStateBtn").show();
+                $("#succNoticeBtn").show();
+                $("#compensateBtn").show();
+                $("#profile").show();
+                $("#home").hide();
+            });
+            $("#merFact").bind('click',function () {
+                // 加载第二次债转数据
+                loadTrans("2");
+                $("#circleStateBtn").show();
+                $("#succNoticeBtn").show();
+                $("#compensateBtn").show();
+                $("#profile").show();
+                $("#home").hide();
+            });
+            $("#fact").bind('click',function () {
+                $("#circleStateBtn").hide();
+                $("#succNoticeBtn").hide();
+                $("#compensateBtn").hide();
+                $("#home").show();
+                $("#profile").hide();
+            });
+
+            $("#merFact").bind('click',function () {
+                $("#circleStateBtn").show();
+                $("#succNoticeBtn").show();
+                $("#profile").show();
+                $("#compensateBtn").show();
+                $("#home").hide();
+            });
+        });
+
+        function loadTrans(transType) {
+            $("#detailMode_businessId").text("");
+            $("#detailMode_transferOrderId").text("");
+            $("#detailMode_payMemberId").text("");
+            $("#detailMode_payMemberName").text("");
+            $("#detailMode_payeeMemberId").text("");
+            $("#detailMode_payeeMemberName").text("");
+            $("#detailMode_transferMoney").text("");
+            $("#detailMode_transferFee").text("");
+            $("#detailMode_createTime").text("");
+            $("#detailMode_updateTime").text("");
+            $("#detailMode_type").text("");
+            $("#detailMode_orderId").text("");
+            $("#detailMode_circleState").text("");
+            $("#detailMode_succFlag").text("");
+            $("#detailMode_remark").text("");
+
+            var businessId = $("#page_orderId").text();
+            if (businessId == null) {
+                return;
+            }
+            var url = omsCtx+"/factoring/transferOrder/twice/detail";
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {
+                    "businessId": businessId,
+                    "type":transType
+                },
+                success: function (data) {
+                    if (data != null && data != "") {
+                        $("#detailMode_businessId").text(null == data.businessId ? "":data.businessId );
+                        $("#detailMode_transferOrderId").text(null == data.transferOrderId? "":data.transferOrderId);
+                        $("#detailMode_payMemberId").text(null == data.payMemberId? "":data.payMemberId);
+                        $("#detailMode_payMemberName").text(null == data.payMemberName? "":data.payMemberName);
+                        $("#detailMode_payeeMemberId").text(null == data.payeeMemberId? "":data.payeeMemberId);
+                        $("#detailMode_payeeMemberName").text(null == data.payeeMemberName? "":data.payeeMemberName);
+                        $("#detailMode_transferMoney").text(null == data.transferMoney ? "":data.transferMoney);
+                        $("#detailMode_transferFee").text(null == data.transferFee? "":data.transferFee);
+                        $("#detailMode_createTime").text(null == data.createTime? "":data.createTime);
+                        $("#detailMode_updateTime").text(null == data.updateTime? "":data.updateTime);
+                        $("#detailMode_type").text(null == data.type? "":data.type);
+                        $("#detailMode_orderId").text(null == data.orderId? "":data.orderId);
+                        $("#detailMode_circleState").text(null == data.circleState? "":data.circleState);
+                        $("#detailMode_succFlag").text(null == data.succFlag? "":data.succFlag);
+                        $("#detailMode_remark").text(null == data.remark? "":data.remark);
+                    }
+                },
+                error:function () {
+                    PagePrompts.fail("请求失败");
+                }
+            });
+        };
+
+        // 状态流转按钮
+        $("#circleStateBtn").click(function () {
+            var orderId = $("#detailMode_orderId").text();
+            var type = $("#detailMode_type").text();
+            var businessId = $("#detailMode_businessId").text();
+            var transferOrderId = $("#detailMode_transferOrderId").text();
+            $.ajax({
+                url: omsCtx+"/factoring/transferOrder/circleState",
+                type: 'post',
+                data: {
+                    "businessId": businessId,
+                    "transferOrderId": transferOrderId,
+                    "orderId": orderId,
+                    "type":type
+                },
+                dataType : "json",
+                success: function (data) {
+                    if (data != null) {
+                        PagePrompts.success(data.msg);
+                    }
+                },
+                error:function () {
+                    PagePrompts.fail("请求失败");
+                }
+            });
+        });
+
+        // 成功状态通知小贷前置
+        $("#succNoticeBtn").click(function () {
+            var transferOrderId = $("#detailMode_transferOrderId").text();
+            $.ajax({
+                url: omsCtx+"/factoring/transferOrder/succNoticeMicro",
+                type: 'post',
+                data: {
+                    "transferOrderId": transferOrderId
+                },
+                dataType : "json",
+                success: function (data) {
+                    if (data != null) {
+                        PagePrompts.success(data.msg);
+                    }
+                },
+                error:function () {
+                    PagePrompts.fail("请求失败");
+                }
+            });
+        });
+
+        function closeOrderDetail(){
+            $("#merFact").removeClass("active");
+            $("#factMicro").removeClass("active");
+            $("#fact").addClass("active");
+            $("#home").show();
+            $("#profile").hide();
+            $("#circleStateBtn").hide();
+            $("#succNoticeBtn").hide();
+            $("#compensateBtn").hide();
+            $("#detailMode").hide();
+        }
+
+        // 余额不足补偿
+        $("#compensateBtn").click(function () {
+            var transferOrderId = $("#detailMode_transferOrderId").text();
+            $.ajax({
+                url: omsCtx+"/factoring/transferOrder/compensate",
+                type: 'post',
+                data: {
+                    "transferOrderId": transferOrderId
+                },
+                dataType : "json",
+                success: function (data) {
+                    if (data != null) {
+                        PagePrompts.success(data.msg);
+                    }
+                },
+                error:function () {
+                    PagePrompts.fail("请求失败");
+                }
+            });
+        });
+
+    </script>
+
+</th:block>
+
+</body>
+</html>
