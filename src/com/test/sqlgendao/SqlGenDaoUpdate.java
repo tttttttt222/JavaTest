@@ -11,20 +11,21 @@ public class SqlGenDaoUpdate {
 	private final static boolean isAllString = false;
 
 
-	private final static String sqlString = "  `id` bigint(11) NOT NULL AUTO_INCREMENT,\n"
-			+ "  `member_id` varchar(32) COLLATE utf8mb4_bin NOT NULL COMMENT '商户id',\n"
-			+ "  `channel_member_id` varchar(32) COLLATE utf8mb4_bin NOT NULL COMMENT '商户渠道方id',\n"
-			+ "  `rsa_public_key` text COLLATE utf8mb4_bin COMMENT '公钥',\n"
-			+ "  `rsa_private_key` text COLLATE utf8mb4_bin COMMENT '私钥',\n"
-			+ "  `channel_id` int(16) NOT NULL COMMENT '渠道号:1 畅游',\n"
-			+ "  `counter_id` int(16) DEFAULT NULL COMMENT '柜台号',\n"
-			+ "  `options` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '转换积分渠道',\n"
-			+ "  `remark` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,\n"
-			+ "  `rem1` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,\n"
-			+ "  `rem2` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,\n"
-			+ "  `rem3` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,\n"
-			+ "  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',\n"
-			+ "  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',";
+	private final static String sqlString = "  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
+			+ "  `goods_name` varchar(255) DEFAULT NULL,\n"
+			+ "  `goods_price` decimal(10,2) DEFAULT NULL,\n"
+			+ "  `goods_number` int(11) DEFAULT NULL,\n"
+			+ "  `goods_weight` decimal(10,0) DEFAULT NULL,\n"
+			+ "  `goods_state` tinyint(4) DEFAULT NULL,\n"
+			+ "  `hot_mumber` int(11) DEFAULT NULL,\n"
+			+ "  `is_promote` tinyint(4) DEFAULT NULL,\n"
+			+ "  `goods_small_logo` varchar(255) DEFAULT NULL,\n"
+			+ "  `goods_big_logo` varchar(255) DEFAULT NULL,\n"
+			+ "  `goods_introduce` text ,\n"
+			+ "  `is_del` tinyint(4) DEFAULT NULL,\n"
+			+ "  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,\n"
+			+ "  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
+			+ "  `delete_time` timestamp NULL DEFAULT NULL,";
 
 	private static String dtoName = "";
 
@@ -68,19 +69,39 @@ public class SqlGenDaoUpdate {
 			System.out.println(sqlDaoParmGenDto.getParm());
 		}
 
-		System.out.println();
+		System.out.println("--------------------------------------query----------------------------------------------");
 
 		for (SqlDaoParmGenDto sqlDaoParmGenDto : sqlDaoParmGenDtos) {
 			String out = "";
 			if (sqlDaoParmGenDto.getJdbcType().equals("VARCHAR")) {
-				out = "<if test=\" " + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null and " + dtoName
+				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null and XXX." + dtoName
 						+ sqlDaoParmGenDto.getParmFormat() + " != ''\">\n"
-						+ "      AND " + sqlDaoParmGenDto.getParm() + " =#{" + dtoName + sqlDaoParmGenDto
+						+ "      AND " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
 						.getParmFormat() + "}\n"
 						+ "</if>";
 			} else {
-				out = "<if test=\" " + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null\">\n"
-						+ "      AND " + sqlDaoParmGenDto.getParm() + " =#{" + dtoName + sqlDaoParmGenDto
+				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null\">\n"
+						+ "      AND " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
+						.getParmFormat() + "}\n"
+						+ "</if>";
+			}
+
+			System.out.println(out);
+		}
+
+		System.out.println("--------------------------------------update----------------------------------------------");
+
+		for (SqlDaoParmGenDto sqlDaoParmGenDto : sqlDaoParmGenDtos) {
+			String out = "";
+			if (sqlDaoParmGenDto.getJdbcType().equals("VARCHAR")) {
+				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null and XXX." + dtoName
+						+ sqlDaoParmGenDto.getParmFormat() + " != ''\">\n"
+						+ "      " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
+						.getParmFormat() + "}\n"
+						+ "</if>";
+			} else {
+				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null\">\n"
+						+ "      " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
 						.getParmFormat() + "}\n"
 						+ "</if>";
 			}
