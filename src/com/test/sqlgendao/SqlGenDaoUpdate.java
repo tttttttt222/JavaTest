@@ -11,21 +11,13 @@ public class SqlGenDaoUpdate {
 	private final static boolean isAllString = false;
 
 
-	private final static String sqlString = "  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
-			+ "  `goods_name` varchar(255) DEFAULT NULL,\n"
-			+ "  `goods_price` decimal(10,2) DEFAULT NULL,\n"
-			+ "  `goods_number` int(11) DEFAULT NULL,\n"
-			+ "  `goods_weight` decimal(10,0) DEFAULT NULL,\n"
-			+ "  `goods_state` tinyint(4) DEFAULT NULL,\n"
-			+ "  `hot_mumber` int(11) DEFAULT NULL,\n"
-			+ "  `is_promote` tinyint(4) DEFAULT NULL,\n"
-			+ "  `goods_small_logo` varchar(255) DEFAULT NULL,\n"
-			+ "  `goods_big_logo` varchar(255) DEFAULT NULL,\n"
-			+ "  `goods_introduce` text ,\n"
-			+ "  `is_del` tinyint(4) DEFAULT NULL,\n"
-			+ "  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,\n"
-			+ "  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
-			+ "  `delete_time` timestamp NULL DEFAULT NULL,";
+	private final static String sqlString = "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分类id',\n"
+			+ "  `event_title` varchar(255) DEFAULT NULL,\n"
+			+ "  `event_brief` text COMMENT '简介',\n"
+			+ "  `event_contennt` mediumtext COMMENT '内容',\n"
+			+ "  `event_cate_ids` text ,\n"
+			+ "  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n"
+			+ "  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,";
 
 	private static String dtoName = "";
 
@@ -97,12 +89,12 @@ public class SqlGenDaoUpdate {
 				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null and XXX." + dtoName
 						+ sqlDaoParmGenDto.getParmFormat() + " != ''\">\n"
 						+ "      " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
-						.getParmFormat() + "}\n"
+						.getParmFormat() + "},\n"
 						+ "</if>";
 			} else {
 				out = "<if test=\" XXX." + dtoName + sqlDaoParmGenDto.getParmFormat() + " != null\">\n"
 						+ "      " + sqlDaoParmGenDto.getParm() + " =#{XXX." + dtoName + sqlDaoParmGenDto
-						.getParmFormat() + "}\n"
+						.getParmFormat() + "},\n"
 						+ "</if>";
 			}
 
